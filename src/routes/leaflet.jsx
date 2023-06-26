@@ -19,8 +19,22 @@ import "leaflet/dist/leaflet.css";
 import { url } from "../utils";
 
 export default function Leaflet(props) {
+  const booths = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
-  console.log(searchParams)
+  const [shownBooth, setShownBooth] = useState( null );
+  useEffect( () => {
+    if ( searchParams.get('booth') ) {
+      let index = booths?.findIndex( booth => booth.booth === searchParams.get('booth') )
+      console.log(booths[index], index, 'finding booth')
+      if (booths[index]) {
+        setShownBooth( {
+          number: booths[index].booth,
+          lat: booths[index].lat,
+          lng: booths[index].lng
+        } )
+      }
+    }
+  }, [] )
   const [lat, setLat] = useState(43.157773)
   const [lng, setLng] = useState(-77.588601)
   const [mapZoom, setMapZoom] = useState(18)
@@ -28,7 +42,6 @@ export default function Leaflet(props) {
     [43.159032857273324, -77.59059101343156],
     [43.1564748529275, -77.585716098547]
   ]
-  const booths = useLoaderData();
 
   return (
     <>
@@ -83,7 +96,16 @@ export default function Leaflet(props) {
             </LayersControl.Overlay>
             }
           </LayersControl>
-          
+          {
+            shownBooth && <Marker position={ [shownBooth.lat, shownBooth.lng] } icon={L.icon({
+              iconUrl: `${url.origin}/map-tests/pin.png`,
+              iconSize:     [22, 30], // size of the icon
+              iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+              popupAnchor:  [0, -50]
+            })}>
+              <Popup> Booth {shownBooth.number} </Popup>
+            </Marker>
+          }
         </MapContainer>
       </div>
     </>

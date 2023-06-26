@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import Root from './routes/root.jsx';
 import Leaflet from './routes/leaflet.jsx';
+import OpenLayers from './routes/openlayers.jsx';
 import Home from './routes/home.jsx';
 import './index.css'
 import Papa from 'papaparse';
@@ -23,6 +24,23 @@ const router = createBrowserRouter( [
       {
         path: '/leaflet',
         element: <Leaflet/>,
+        loader: async ( {request, params} ) => {
+          return new Promise( (resolve, error) => {
+            Papa.parse( `${url.origin}/map-tests/booth-locations.csv`, {
+              download: true,
+              header: true,
+              skipEmptyLines: true,
+              error,
+              complete: results => {
+                resolve(results.data)
+              }
+            } )
+          } )
+        },
+      },
+      {
+        path: '/openlayers',
+        element: <OpenLayers/>,
         loader: async ( {request, params} ) => {
           return new Promise( (resolve, error) => {
             Papa.parse( `${url.origin}/map-tests/booth-locations.csv`, {
