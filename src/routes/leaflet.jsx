@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData, Link } from "react-router-dom";
+import { Outlet, useLoaderData, Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import L from 'leaflet';
 import {
@@ -10,6 +10,7 @@ import {
   useMapEvents,
   Polygon,
   LayersControl,
+  LayerGroup,
   SVGOverlay,
   ImageOverlay,
   useMapEvent,
@@ -18,6 +19,8 @@ import "leaflet/dist/leaflet.css";
 import { url } from "../utils";
 
 export default function Leaflet(props) {
+  const [searchParams, setSearchParams] = useSearchParams();
+  console.log(searchParams)
   const [lat, setLat] = useState(43.157773)
   const [lng, setLng] = useState(-77.588601)
   const [mapZoom, setMapZoom] = useState(18)
@@ -25,11 +28,12 @@ export default function Leaflet(props) {
     [43.159032857273324, -77.59059101343156],
     [43.1564748529275, -77.585716098547]
   ]
+  const booths = useLoaderData();
 
   return (
     <>
       <div className="content">
-        <h1>Map</h1>
+        <h1>Leaflet</h1>
         <MapContainer
           center={[lat, lng]}
           zoom={mapZoom}
@@ -43,9 +47,9 @@ export default function Leaflet(props) {
           whenReady={ map => {
             if ('geolocation' in navigator) {
               navigator.geolocation.getCurrentPosition( location => {
-                console.log(location)
+                // console.log(location)
                 L.marker([location.coords.latitude, location.coords.longitude], {icon: L.icon({
-                  iconUrl: `${url.origin}/clothesline/pin.png`,
+                  iconUrl: `${url.origin}/map-tests/pin.png`,
                   iconSize:     [22, 30], // size of the icon
                   iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
                   popupAnchor:  [0, -50]
@@ -61,8 +65,25 @@ export default function Leaflet(props) {
             zoom={mapZoom}
             minZoom={17}
           />
-          <ImageOverlay bounds={SVGbounds} url={`${url.origin}/clothesline/map.png`} opacity="1" />
-          {/* <LocationMarker /> */}
+          <ImageOverlay bounds={SVGbounds} url={`${url.origin}/map-tests/map.png`} opacity="1" />
+          <LayersControl position="topright">
+
+            {booths && <LayersControl.Overlay name="Booth Locations">
+              <LayerGroup>
+                {
+                  booths.map( (booth, index) => {
+                    return (
+                      <Marker position={[booth.lat, booth.lng]} key={index}>
+                        <Popup> Booth {booth.zone}{booth.booth}</Popup>
+                      </Marker>
+                    )
+                  } )
+                }
+              </LayerGroup>
+            </LayersControl.Overlay>
+            }
+          </LayersControl>
+          
         </MapContainer>
       </div>
     </>
@@ -70,19 +91,21 @@ export default function Leaflet(props) {
 }
 function LocationMarker() {
   const [position, setPosition] = useState(null);
-  const map = useMap();
-
-  useEffect( () => {
-    map.locate().on( 'locationfound', e => {
-      setPosition(e.latlng);
-      map.flyTo( e.latlng, map.getZoom() )
-    } )
-  }, [map] )
+  const map = useMapEvents({
+    click(e) {
+      setPosition(e.latlng)
+      // map.locate()
+    },
+    locationfound(e) {
+      setPosition(e.latlng)
+      // map.flyTo(e.latlng, map.getZoom())
+    },
+  })
 
   return position === null ? null : (
     <Marker position={position}>
       <Popup>
-        You are here!
+        You are here: {position.lat}, {position.lng}
       </Popup>
     </Marker>
   );

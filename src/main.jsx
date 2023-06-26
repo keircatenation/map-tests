@@ -8,6 +8,8 @@ import Root from './routes/root.jsx';
 import Leaflet from './routes/leaflet.jsx';
 import Home from './routes/home.jsx';
 import './index.css'
+import Papa from 'papaparse';
+import { url } from './utils.js';
 
 const router = createBrowserRouter( [
   {
@@ -20,7 +22,20 @@ const router = createBrowserRouter( [
       },
       {
         path: '/leaflet',
-        element: <Leaflet/>
+        element: <Leaflet/>,
+        loader: async ( {request, params} ) => {
+          return new Promise( (resolve, error) => {
+            Papa.parse( `${url.origin}/map-tests/booth-locations.csv`, {
+              download: true,
+              header: true,
+              skipEmptyLines: true,
+              error,
+              complete: results => {
+                resolve(results.data)
+              }
+            } )
+          } )
+        },
       }
     ]
   }

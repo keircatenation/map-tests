@@ -10,7 +10,7 @@ export default function Root() {
         <Outlet />
       </main>
       <footer>
-        <p>© Memorial Art Gallery of the University of Rochester</p>
+        <p>© Keiran Pillman</p>
       </footer>
     </>
   );
