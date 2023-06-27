@@ -39,8 +39,8 @@ export default function Leaflet(props) {
   const [lng, setLng] = useState(-77.588601)
   const [mapZoom, setMapZoom] = useState(18)
   const SVGbounds = [
-    [43.159032857273324, -77.59059101343156],
-    [43.1564748529275, -77.585716098547]
+    [43.15904224612154, -77.5905816257],
+    [43.15643280607245, -77.58568659424783]
   ]
 
   return (
@@ -62,12 +62,13 @@ export default function Leaflet(props) {
               map.target.locate()
               map.target.on( 'locationfound', e => {
                 L.marker( e.latlng, {icon: L.icon({
-                  iconUrl: `${url.origin}/clothesline/pin.png`,
+                  iconUrl: `${url.origin}/map-tests/pin.png`,
                   iconSize:     [22, 30], // size of the icon
                   iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
                   popupAnchor:  [0, -50]
                 })} ).addTo(map.target)
                 .bindPopup( 'You are within ' + e.accuracy + ' meters from this point.' ).openPopup()
+                L.circle(e.latlng, e.accuracy).addTo(map.target);
               } )
               map.target.on( 'locationerror', e => {
                 alert(e.message)
@@ -83,7 +84,7 @@ export default function Leaflet(props) {
             zoom={mapZoom}
             minZoom={17}
           />
-          <ImageOverlay bounds={SVGbounds} url={`${url.origin}/map-tests/map.png`} opacity="1" />
+          <ImageOverlay bounds={SVGbounds} url={`${url.origin}/map-tests/map.webp`} opacity="1" />
           <LayersControl position="topright">
 
             {booths && <LayersControl.Overlay name="Booth Locations">
