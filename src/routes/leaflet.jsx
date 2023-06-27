@@ -59,15 +59,20 @@ export default function Leaflet(props) {
           }}
           whenReady={ map => {
             if ('geolocation' in navigator) {
-              navigator.geolocation.getCurrentPosition( location => {
-                // console.log(location)
-                L.marker([location.coords.latitude, location.coords.longitude], {icon: L.icon({
-                  iconUrl: `${url.origin}/map-tests/pin.png`,
+              map.target.locate()
+              map.target.on( 'locationfound', e => {
+                L.marker( e.latlng, {icon: L.icon({
+                  iconUrl: `${url.origin}/clothesline/pin.png`,
                   iconSize:     [22, 30], // size of the icon
                   iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
                   popupAnchor:  [0, -50]
-                })} ).addTo(map.target);
+                })} ).addTo(map.target)
+                .bindPopup( 'You are within ' + e.accuracy + ' meters from this point.' ).openPopup()
               } )
+              map.target.on( 'locationerror', e => {
+                alert(e.message)
+              } )
+              
             }
           } }
         >
