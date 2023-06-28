@@ -12,25 +12,49 @@ import {
   LayersControl,
   LayerGroup,
   ImageOverlay,
-  useMapEvent,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { url } from "../utils";
 
+const boothPin = L.icon({
+  iconUrl: `${url.origin}/map-tests/booth-pin.png`,
+  iconSize:     [22, 30], // size of the icon
+  iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+  popupAnchor:  [0, -40]
+});
+const foodPin = L.icon({
+  iconUrl: `${url.origin}/map-tests/food-pin.png`,
+  iconSize:     [22, 30], // size of the icon
+  iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+  popupAnchor:  [0, -40]
+});
+const starPin = L.icon({
+  iconUrl: `${url.origin}/map-tests/star-pin.png`,
+  iconSize:     [22, 30], // size of the icon
+  iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+  popupAnchor:  [0, -40]
+});
+const personPin = L.icon({
+  iconUrl: `${url.origin}/map-tests/person-pin.png`,
+  iconSize:     [22, 30], // size of the icon
+  iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+  popupAnchor:  [0, -40]
+});
+
 export default function Leaflet(props) {
-  const booths = useLoaderData();
+  const locations = useLoaderData();
   const [searchParams, setSearchParams] = useSearchParams();
   const [shownBooth, setShownBooth] = useState( null );
   const [accuracy, setAccuracy] = useState(null)
   useEffect( () => {
     if ( searchParams.get('booth') ) {
-      let index = booths?.findIndex( booth => booth.booth === searchParams.get('booth') )
-      console.log(booths[index], index, 'finding booth')
-      if (booths[index]) {
+      let index = locations?.findIndex( booth => booth.name === searchParams.get('booth') )
+      console.log(locations[index], index, 'finding booth')
+      if (locations[index]) {
         setShownBooth( {
-          number: booths[index].booth,
-          lat: booths[index].lat,
-          lng: booths[index].lng
+          number: locations[index].name,
+          lat: locations[index].lat,
+          lng: locations[index].lng
         } )
       }
     }
@@ -92,18 +116,19 @@ export default function Leaflet(props) {
           <LocationMarker setAccuracy={setAccuracy} accuracy={accuracy}/>
           <LayersControl position="topright">
 
-            {booths && <LayersControl.Overlay name="Booth Locations">
+            {locations && <LayersControl.Overlay name="Locations" checked={shownBooth == null ? true : false}>
               <LayerGroup>
                 {
-                  booths.map( (booth, index) => {
+                  locations.map( (location, index) => {
+
                     return (
-                      <Marker position={[booth.lat, booth.lng]} key={index} icon={L.icon({
-                        iconUrl: `${url.origin}/map-tests/booth-pin.png`,
-                        iconSize:     [22, 30], // size of the icon
-                        iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
-                        popupAnchor:  [0, -40]
-                      })}>
-                        <Popup> Booth {booth.zone}{booth.booth}</Popup>
+                      <Marker position={[location.lat, location.lng]} key={index} icon={L.icon({
+                          iconUrl: `${url.origin}/map-tests/${location.pin}-pin.png`,
+                          iconSize:     [22, 30], // size of the icon
+                          iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+                          popupAnchor:  [0, -40]
+                        })}>
+                        <Popup>{location.name}</Popup>
                       </Marker>
                     )
                   } )
@@ -120,12 +145,7 @@ export default function Leaflet(props) {
 }
 function ShownBoothMarker ( {shownBooth} ) {
   return shownBooth == null ? null : (
-    <Marker position={ [shownBooth.lat, shownBooth.lng] } icon={L.icon({
-      iconUrl: `${url.origin}/map-tests/booth-pin.png`,
-      iconSize:     [40, 50], // size of the icon
-      iconAnchor:   [20, 50], // point of the icon which will correspond to marker's location
-      popupAnchor:  [0, -40]
-    })}>
+    <Marker position={ [shownBooth.lat, shownBooth.lng] } icon={boothPin}>
       <Popup> Booth {shownBooth.number} </Popup>
     </Marker>
   )
@@ -135,7 +155,7 @@ function LocationMarker({setAccuracy, accuracy}) {
   const [position, setPosition] = useState(null);
   const map = useMapEvents({
     locationfound(e) {
-      console.log('location found!')
+      console.log('location found!', e.accuracy*1.5)
       setPosition(e.latlng)
       setAccuracy(e.accuracy)
       map.flyTo(e.latlng, map.getZoom())
@@ -153,13 +173,8 @@ function LocationMarker({setAccuracy, accuracy}) {
   return position === null ? null : (
     <>
       <button className="update-location" onClick={() => updateLocation()}>Update Location</button>
-      <Marker position={position} icon={L.icon({
-        iconUrl: `${url.origin}/map-tests/person-pin.png`,
-        iconSize:     [40, 50], // size of the icon
-        iconAnchor:   [20, 50], // point of the icon which will correspond to marker's location
-        popupAnchor:  [0, -50]
-      })} ></Marker>
-      <Circle center={position} radius={accuracy} pathOptions={ {color: 'var(--primary)', opacity: '1', fillColor: 'transparent'} }/>
+      <Marker position={position} icon={personPin} ></Marker>
+      <Circle center={position} radius={accuracy*1.5} pathOptions={ {color: 'var(--primary)', opacity: '1', fillColor: 'transparent'} }/>
     </>
   );
 }
