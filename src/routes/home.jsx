@@ -8,6 +8,9 @@ export default function Home() {
         <h1>Mapping Tests!</h1>
         <ul>
           <li>
+            <Link to={`/leaflet-helper/`}>Leaflet Position Helper</Link>
+          </li>
+          <li>
             <Link to={`/leaflet/`}>Leaflet</Link> / <Link to={`/leaflet/?booth=010`}>Leaflet, Booth 10</Link>
           </li>
           <li>
