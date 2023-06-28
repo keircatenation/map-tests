@@ -142,14 +142,9 @@ main .header-image img {
 }
 .legend {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
   gap:.5rem;
   margin-bottom:1rem;
-}
-@media (min-width: 700px) {
-  .legend {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
 }
 .legend .legend-item {
   display: flex;

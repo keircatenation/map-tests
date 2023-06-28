@@ -8,10 +8,9 @@ import {
   Popup,
   useMap,
   useMapEvents,
-  Polygon,
+  Circle,
   LayersControl,
   LayerGroup,
-  SVGOverlay,
   ImageOverlay,
   useMapEvent,
 } from "react-leaflet";
@@ -50,44 +49,20 @@ export default function Leaflet(props) {
         <h1>Leaflet</h1>
         <div className="legend">
           <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/green-pin.png`} alt="Green Pin"/>
+            <img src={`${url.origin}/map-tests/person-pin.png`} alt="Person Pin" width="40px" height="50px"/>
             <figcaption>Location{ accuracy? ` (within ${Math.round(accuracy)} meters)` : ''}</figcaption>
           </figure>
           <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/zone-A.png`} alt="Green Pin"/>
-            <figcaption>Zone A Artist Booths</figcaption>
+            <img src={`${url.origin}/map-tests/booth-pin.png`} alt="Booth Pin" width="40px" height="50px"/>
+            <figcaption>Artist Booths</figcaption>
           </figure>
           <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/zone-B.png`} alt="Green Pin"/>
-            <figcaption>Zone B Artist Booths</figcaption>
-          </figure>
-          <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/teal-pin.png`} alt="Green Pin"/>
-            <figcaption>Zone C Artist Booths</figcaption>
-          </figure>
-          <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/teal-pin.png`} alt="Green Pin"/>
-            <figcaption>Zone D Artist Booths</figcaption>
-          </figure>
-          <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/teal-pin.png`} alt="Green Pin"/>
-            <figcaption>Zone E Artist Booths</figcaption>
-          </figure>
-          <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/teal-pin.png`} alt="Green Pin"/>
-            <figcaption>Zone F Artist Booths</figcaption>
-          </figure>
-          <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/teal-pin.png`} alt="Green Pin"/>
-            <figcaption>Zone G Artist Booths</figcaption>
-          </figure>
-          <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/teal-pin.png`} alt="Green Pin"/>
-            <figcaption>Zone H Artist Booths</figcaption>
-          </figure>
-          <figure className="legend-item">
-            <img src={`${url.origin}/map-tests/teal-pin.png`} alt="Green Pin"/>
+            <img src={`${url.origin}/map-tests/food-pin.png`} alt="Food Pin" width="40px" height="50px"/>
             <figcaption>Food Trucks</figcaption>
+          </figure>
+          <figure className="legend-item">
+            <img src={`${url.origin}/map-tests/star-pin.png`} alt="Food Pin" width="40px" height="50px"/>
+            <figcaption>Entertainment</figcaption>
           </figure>
         </div>
         <MapContainer
@@ -103,20 +78,6 @@ export default function Leaflet(props) {
           whenReady={ map => {
             if ('geolocation' in navigator) {
               map.target.locate()
-              map.target.on( 'locationfound', e => {
-                setAccuracy(Math.round(e.accuracy))
-                L.marker( e.latlng, {icon: L.icon({
-                  iconUrl: `${url.origin}/map-tests/green-pin.png`,
-                  iconSize:     [22, 30], // size of the icon
-                  iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
-                  popupAnchor:  [0, -50]
-                })} ).addTo(map.target)
-                L.circle(e.latlng, { radius: e.accuracy, color: 'green', opacity: '0.1' }).addTo(map.target);
-              } )
-              map.target.on( 'locationerror', e => {
-                alert(e.message)
-              } )
-              
             }
           } }
         >
@@ -128,6 +89,7 @@ export default function Leaflet(props) {
             minZoom={17}
           />
           <ImageOverlay bounds={SVGbounds} url={`${url.origin}/map-tests/map.webp`} opacity="1" />
+          <LocationMarker setAccuracy={setAccuracy} accuracy={accuracy}/>
           <LayersControl position="topright">
 
             {booths && <LayersControl.Overlay name="Booth Locations">
@@ -136,10 +98,10 @@ export default function Leaflet(props) {
                   booths.map( (booth, index) => {
                     return (
                       <Marker position={[booth.lat, booth.lng]} key={index} icon={L.icon({
-                        iconUrl: `${url.origin}/map-tests/teal-pin.png`,
+                        iconUrl: `${url.origin}/map-tests/booth-pin.png`,
                         iconSize:     [22, 30], // size of the icon
                         iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
-                        popupAnchor:  [0, -50]
+                        popupAnchor:  [0, -40]
                       })}>
                         <Popup> Booth {booth.zone}{booth.booth}</Popup>
                       </Marker>
@@ -151,7 +113,6 @@ export default function Leaflet(props) {
             }
           </LayersControl>
           <ShownBoothMarker shownBooth={shownBooth}/>
-          {/* <LocationMarker setAccuracy={setAccuracy} accuracy={accuracy}/> */}
         </MapContainer>
       </div>
     </>
@@ -160,10 +121,10 @@ export default function Leaflet(props) {
 function ShownBoothMarker ( {shownBooth} ) {
   return shownBooth == null ? null : (
     <Marker position={ [shownBooth.lat, shownBooth.lng] } icon={L.icon({
-      iconUrl: `${url.origin}/map-tests/teal-pin.png`,
+      iconUrl: `${url.origin}/map-tests/booth-pin.png`,
       iconSize:     [22, 30], // size of the icon
       iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
-      popupAnchor:  [0, -50]
+      popupAnchor:  [0, -40]
     })}>
       <Popup> Booth {shownBooth.number} </Popup>
     </Marker>
@@ -178,16 +139,20 @@ function LocationMarker({setAccuracy, accuracy}) {
       setAccuracy(e.accuracy)
       map.flyTo(e.latlng, map.getZoom())
     },
+    locationerror(e) {
+      alert(e.message)
+    }
   })
 
   return position === null ? null : (
     <>
       <Marker position={position} icon={L.icon({
-        iconUrl: `${url.origin}/map-tests/green-pin.png`,
+        iconUrl: `${url.origin}/map-tests/person-pin.png`,
         iconSize:     [22, 30], // size of the icon
         iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
         popupAnchor:  [0, -50]
       })} ></Marker>
+      <Circle center={position} radius={accuracy} pathOptions={ {color: 'var(--primary)', opacity: '0.1', fillColor: 'transparent'} }/>
     </>
   );
 }
