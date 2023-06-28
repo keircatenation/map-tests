@@ -122,8 +122,8 @@ function ShownBoothMarker ( {shownBooth} ) {
   return shownBooth == null ? null : (
     <Marker position={ [shownBooth.lat, shownBooth.lng] } icon={L.icon({
       iconUrl: `${url.origin}/map-tests/booth-pin.png`,
-      iconSize:     [22, 30], // size of the icon
-      iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+      iconSize:     [40, 50], // size of the icon
+      iconAnchor:   [20, 50], // point of the icon which will correspond to marker's location
       popupAnchor:  [0, -40]
     })}>
       <Popup> Booth {shownBooth.number} </Popup>
@@ -135,6 +135,7 @@ function LocationMarker({setAccuracy, accuracy}) {
   const [position, setPosition] = useState(null);
   const map = useMapEvents({
     locationfound(e) {
+      console.log('location found!')
       setPosition(e.latlng)
       setAccuracy(e.accuracy)
       map.flyTo(e.latlng, map.getZoom())
@@ -143,16 +144,22 @@ function LocationMarker({setAccuracy, accuracy}) {
       alert(e.message)
     }
   })
+  const mapRef = useMap();
+  function updateLocation() {
+    console.log('updating location!')
+    mapRef.locate()
+  }
 
   return position === null ? null : (
     <>
+      <button className="update-location" onClick={() => updateLocation()}>Update Location</button>
       <Marker position={position} icon={L.icon({
         iconUrl: `${url.origin}/map-tests/person-pin.png`,
-        iconSize:     [22, 30], // size of the icon
-        iconAnchor:   [11, 30], // point of the icon which will correspond to marker's location
+        iconSize:     [40, 50], // size of the icon
+        iconAnchor:   [20, 50], // point of the icon which will correspond to marker's location
         popupAnchor:  [0, -50]
       })} ></Marker>
-      <Circle center={position} radius={accuracy} pathOptions={ {color: 'var(--primary)', opacity: '0.1', fillColor: 'transparent'} }/>
+      <Circle center={position} radius={accuracy} pathOptions={ {color: 'var(--primary)', opacity: '1', fillColor: 'transparent'} }/>
     </>
   );
 }

@@ -2,6 +2,10 @@
   --primary: #c62161;
   --accent: #187caf;
 }
+@font-face {
+  font-family: "Inter";
+  src: url(/Inter-VariableFont.ttf);
+}
 
 * {
   box-sizing: border-box;
@@ -153,6 +157,20 @@ main .header-image img {
   align-items: center;
   margin:0;
   padding:0;
+}
+.update-location {
+  position: absolute;
+  z-index: 999;
+  color: black;
+  background-color: white;
+  left: 3rem;
+  top:1rem;
+  font-family: "Inter", sans-serif;
+  padding:.5rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  cursor: pointer;
+  border: 2px solid rgba(0,0,0,0.2)
 }
 footer {
   background-color: var(--primary);
