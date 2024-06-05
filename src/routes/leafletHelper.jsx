@@ -23,8 +23,8 @@ export default function LeafletHelper(props) {
   const [lng, setLng] = useState(-77.588601)
   const [mapZoom, setMapZoom] = useState(18)
   const SVGbounds = [
-    [43.15904224612154, -77.5905816257],
-    [43.15643280607245, -77.58568659424783]
+    [43.15906932220975, -77.59078949689867],
+    [43.156366347551774, -77.58567184209825]
   ]
 
   return (
