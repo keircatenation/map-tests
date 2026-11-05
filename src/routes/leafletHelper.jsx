@@ -23,8 +23,8 @@ export default function LeafletHelper(props) {
   const [lng, setLng] = useState(-77.588601)
   const [mapZoom, setMapZoom] = useState(18)
   const SVGbounds = [
-    [43.15906932220975, -77.59078949689867],
-    [43.156366347551774, -77.58567184209825]
+    [43.159044840643325, -77.59076392652788],
+    [43.15641590241487, -77.58562481405535]
   ]
 
   return (
@@ -48,7 +48,7 @@ export default function LeafletHelper(props) {
             zoom={mapZoom}
             minZoom={17}
           />
-          <ImageOverlay bounds={SVGbounds} url={`${url.origin}/map-tests/map.webp`} opacity="1" />
+          <ImageOverlay bounds={SVGbounds} url={`${url.origin}/map-tests/map.png`} opacity="1" />
           <LocationMarker/>
         </MapContainer>
       </div>
